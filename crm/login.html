@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вход - Менеджер игровых аккаунтов</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
 </head>
 <body>
     <div class="login-container">
@@ -16,213 +12,48 @@
             <h1>🎮 Менеджер аккаунтов</h1>
             <h2>Вход в систему</h2>
             
-            <div id="authTabs" class="tabs">
-                <button class="tab-btn active" onclick="showTab('login')">Вход</button>
-                <button class="tab-btn" onclick="showTab('register')">Регистрация</button>
-            </div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="loginUsername">Логин:</label>
+                    <input type="text" id="loginUsername" required class="input">
+                </div>
+                
+                <div class="input-group">
+                    <label for="loginPassword">Пароль:</label>
+                    <input type="password" id="loginPassword" required class="input">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">Войти</button>
+            </form>
             
-            <!-- Форма входа -->
-            <div id="loginTab" class="tab-content active">
-                <form id="loginForm">
-                    <div class="input-group">
-                        <label for="loginEmail">Email:</label>
-                        <input type="email" id="loginEmail" required class="input">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="loginPassword">Пароль:</label>
-                        <input type="password" id="loginPassword" required class="input">
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-block">
-                        <span id="loginBtnText">Войти</span>
-                        <span id="loginSpinner" class="loading-spinner" style="display:none"></span>
-                    </button>
-                </form>
-            </div>
-            
-            <!-- Форма регистрации -->
-            <div id="registerTab" class="tab-content">
-                <form id="registerForm">
-                    <div class="input-group">
-                        <label for="registerName">ФИО:</label>
-                        <input type="text" id="registerName" required class="input">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="registerEmail">Email:</label>
-                        <input type="email" id="registerEmail" required class="input">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="registerPassword">Пароль (минимум 6 символов):</label>
-                        <input type="password" id="registerPassword" required class="input" minlength="6">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="registerConfirmPassword">Подтвердите пароль:</label>
-                        <input type="password" id="registerConfirmPassword" required class="input" minlength="6">
-                    </div>
-                    
-                    <button type="submit" class="btn btn-success btn-block">
-                        <span id="registerBtnText">Зарегистрироваться</span>
-                        <span id="registerSpinner" class="loading-spinner" style="display:none"></span>
-                    </button>
-                </form>
-            </div>
-            
-            <div id="authError" class="error-message" style="display: none;"></div>
+            <div id="loginError" style="color: red; margin-top: 15px; display: none;"></div>
             
             <div class="login-footer">
-                <p>Данные синхронизируются между устройствами</p>
-                <p>Работает и оффлайн</p>
+                <p>Демо доступ: admin / @Az27831501112</p>
             </div>
         </div>
     </div>
 
-    <script src="firebase.js"></script>
+    <script src="auth.js"></script>
     <script>
-        // Показ/скрытие вкладок
-        function showTab(tabName) {
-            // Скрываем все табы
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Показываем выбранный таб
-            document.getElementById(tabName + 'Tab').classList.add('active');
-            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+        // Если уже авторизован - перенаправляем
+        if (auth.currentUser) {
+            window.location.href = 'manager.html';
         }
 
-        // Обработка входа
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('loginEmail').value;
+            const username = document.getElementById('loginUsername').value;
             const password = document.getElementById('loginPassword').value;
-            const btnText = document.getElementById('loginBtnText');
-            const spinner = document.getElementById('loginSpinner');
-            const errorDiv = document.getElementById('authError');
             
-            btnText.textContent = 'Вход...';
-            spinner.style.display = 'inline-block';
-            errorDiv.style.display = 'none';
-            
-            const result = await firebaseManager.login(email, password);
-            
-            spinner.style.display = 'none';
-            btnText.textContent = 'Войти';
-            
-            if (result.success) {
-                // Редирект на главную
+            if (auth.login(username, password)) {
                 window.location.href = 'manager.html';
             } else {
-                errorDiv.textContent = result.error;
-                errorDiv.style.display = 'block';
-            }
-        });
-
-        // Обработка регистрации
-        document.getElementById('registerForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('registerConfirmPassword').value;
-            const btnText = document.getElementById('registerBtnText');
-            const spinner = document.getElementById('registerSpinner');
-            const errorDiv = document.getElementById('authError');
-            
-            // Проверка паролей
-            if (password !== confirmPassword) {
-                errorDiv.textContent = 'Пароли не совпадают';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            if (password.length < 6) {
-                errorDiv.textContent = 'Пароль должен быть минимум 6 символов';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            btnText.textContent = 'Регистрация...';
-            spinner.style.display = 'inline-block';
-            errorDiv.style.display = 'none';
-            
-            const result = await firebaseManager.register(email, password, name);
-            
-            spinner.style.display = 'none';
-            btnText.textContent = 'Зарегистрироваться';
-            
-            if (result.success) {
-                // Редирект на главную
-                window.location.href = 'manager.html';
-            } else {
-                errorDiv.textContent = result.error;
-                errorDiv.style.display = 'block';
-            }
-        });
-
-        // Автоматический вход если уже авторизован
-        document.addEventListener('DOMContentLoaded', function() {
-            const user = firebaseManager.getCurrentUser();
-            if (user) {
-                window.location.href = 'manager.html';
+                document.getElementById('loginError').textContent = 'Неверный логин или пароль';
+                document.getElementById('loginError').style.display = 'block';
             }
         });
     </script>
-    
-    <style>
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #eee;
-        }
-        
-        .tab-btn {
-            flex: 1;
-            padding: 12px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--gray);
-            transition: all 0.3s;
-        }
-        
-        .tab-btn.active {
-            color: var(--primary);
-            border-bottom: 3px solid var(--primary);
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            margin-left: 10px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
 </body>
 </html>

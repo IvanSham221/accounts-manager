@@ -1,4 +1,22 @@
 // auth.js
+let users = JSON.parse(localStorage.getItem('users')) || [];
+let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+
+// Создаем администратора по умолчанию если нет пользователей
+if (users.length === 0) {
+    const adminUser = {
+        id: 1,
+        username: 'admin',
+        password: '@Az27831501112',
+        name: 'Администратор',
+        role: 'admin',
+        created: new Date().toISOString(),
+        active: true
+    };
+    users.push(adminUser);
+    localStorage.setItem('users', JSON.stringify(users));
+}
+
 class SimpleAuth {
     constructor() {
         this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
@@ -8,12 +26,12 @@ class SimpleAuth {
     checkAuth() {
         const currentPage = window.location.pathname.split('/').pop();
         
-        if (!this.currentUser && currentPage !== 'login.html') {
+        if (!this.currentUser && currentPage !== 'login.html' && currentPage !== 'index.html') {
             this.redirectToLogin();
             return;
         }
 
-        if (this.currentUser && currentPage === 'login.html') {
+        if (this.currentUser && (currentPage === 'login.html' || currentPage === 'index.html')) {
             this.redirectToDashboard();
             return;
         }
@@ -46,9 +64,7 @@ class SimpleAuth {
     }
 
     redirectToLogin() {
-        if (!window.location.pathname.includes('login.html')) {
-            window.location.href = 'login.html';
-        }
+        window.location.href = 'login.html';
     }
 
     redirectToDashboard() {
@@ -69,7 +85,6 @@ class SimpleAuth {
         }
     }
 
-    // Проверка прав доступа
     isAdmin() {
         return this.currentUser && this.currentUser.role === 'admin';
     }

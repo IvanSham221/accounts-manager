@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отчеты - Менеджер игровых аккаунтов</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1><span>📊</span><span>Отчеты и статистика</span></h1>
+        
+        <div class="nav-buttons">
+            <!-- Навигация добавится через JS -->
+        </div>
+
+        <div class="section">
+            <h2>📅 Период отчета</h2>
+            <div class="period-selector">
+                <div class="period-group">
+                    <label for="startDate">С:</label>
+                    <input type="date" id="startDate" class="input">
+                </div>
+                <div class="period-group">
+                    <label for="endDate">По:</label>
+                    <input type="date" id="endDate" class="input">
+                </div>
+                <button onclick="generateReport()" class="btn btn-primary">Сгенерировать отчет</button>
+                <button onclick="generateFullReport()" class="btn btn-secondary">За все время</button>
+            </div>
+        </div>
+
+        <div id="reportResults">
+            <!-- Здесь будет отображаться отчет -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="users.js"></script>
+    <script src="auth.js"></script>
+    <script src="workers.js"></script>
+    <script src="firebase.js"></script>
+</body>
+</html>

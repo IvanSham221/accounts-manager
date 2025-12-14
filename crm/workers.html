@@ -1,0 +1,134 @@
+<!-- workers.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Работники - Менеджер игровых аккаунтов</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>👑 Управление работниками</h1>
+        
+        <div class="nav-buttons">
+            <!-- Навигация добавится через JS -->
+        </div>
+
+        <!-- Проверяем права доступа -->
+        <div id="accessDenied" class="section" style="display: none;">
+            <div class="empty">
+                <h2>🚫 Доступ запрещен</h2>
+                <p>Только администратор имеет доступ к управлению работниками</p>
+                <button onclick="location.href='manager.html'" class="btn btn-primary">Вернуться на панель</button>
+            </div>
+        </div>
+
+        <div id="adminContent" style="display: none;">
+            <div class="section">
+                <h2>➕ Добавить работника</h2>
+                <div class="form-grid">
+                    <input type="text" id="newWorkerName" placeholder="ФИО работника" class="input" required>
+                    <input type="text" id="newWorkerLogin" placeholder="Логин" class="input" required>
+                    <input type="password" id="newWorkerPassword" placeholder="Пароль" class="input" required>
+                    <button onclick="addNewWorker()" class="btn btn-success" style="grid-column: 1 / -1;">Добавить работника</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📋 Список работников</h2>
+                <div id="workersList" class="list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="users.js"></script>
+    <script src="auth.js"></script>
+    <script src="workers.js"></script>
+    <script>
+        function checkAccess() {
+            if (!auth.isAdmin()) {
+                document.getElementById('accessDenied').style.display = 'block';
+                document.getElementById('adminContent').style.display = 'none';
+            } else {
+                document.getElementById('accessDenied').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+                displayWorkers();
+            }
+        }
+
+        function addNewWorker() {
+            if (!auth.isAdmin()) {
+                alert('Недостаточно прав');
+                return;
+            }
+
+            const workerData = {
+                name: document.getElementById('newWorkerName').value,
+                username: document.getElementById('newWorkerLogin').value,
+                password: document.getElementById('newWorkerPassword').value
+            };
+
+            if (workersManager.addWorker(workerData)) {
+                alert('Работник успешно добавлен!');
+                displayWorkers();
+                document.getElementById('newWorkerName').value = '';
+                document.getElementById('newWorkerLogin').value = '';
+                document.getElementById('newWorkerPassword').value = '';
+            }
+        }
+
+        function displayWorkers() {
+            if (!auth.isAdmin()) return;
+
+            const workersList = document.getElementById('workersList');
+            const workers = workersManager.getWorkers();
+
+            if (workers.length === 0) {
+                workersList.innerHTML = '<div class="empty">Нет работников</div>';
+                return;
+            }
+
+            workersList.innerHTML = workers.map(worker => `
+                <div class="item">
+                    <div class="account-info">
+                        <strong>${worker.name}</strong>
+                        <div>
+                            <small>Логин: ${worker.username} | Роль: ${worker.role === 'admin' ? '👑 Администратор' : '👷 Работник'}</small>
+                            <br>
+                            <small>Добавлен: ${new Date(worker.created).toLocaleDateString('ru-RU')} | 
+                            Статус: ${worker.active ? '✅ Активен' : '❌ Неактивен'}</small>
+                        </div>
+                    </div>
+                    <div>
+                        ${worker.id !== auth.currentUser.id ? 
+                            `<button class="btn btn-danger btn-small" onclick="deleteWorker(${worker.id})">🗑️ Удалить</button>` : 
+                            '<span class="current-user">Это вы</span>'
+                        }
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteWorker(workerId) {
+            if (!auth.isAdmin()) {
+                alert('Недостаточно прав');
+                return;
+            }
+
+            if (confirm('Удалить этого работника?')) {
+                if (workersManager.deleteWorker(workerId)) {
+                    displayWorkers();
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', checkAccess);
+    </script>
+    <script src="firebase.js"></script>
+</body>
+</html>

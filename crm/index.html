@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить аккаунт - Менеджер игровых аккаунтов</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1><span>🎮</span><span>Добавить игровой аккаунт</span></h1>
+        
+        <div class="nav-buttons">
+            <!-- Навигация добавится через JS -->
+        </div>
+
+        <div class="section">
+            <h2>👤 Добавить новый аккаунт</h2>
+            <div class="form-grid">
+                <select id="accountGame" class="input" required>
+                    <option value="">Выберите игру</option>
+                </select>
+                <input type="number" id="purchaseAmount" placeholder="Сумма закупа" class="input" step="0.01">
+                
+                <input type="text" id="psnLogin" placeholder="Логин PSN" class="input">
+                <input type="text" id="psnPassword" placeholder="Пароль PSN" class="input">
+                
+                <input type="email" id="email" placeholder="Почта" class="input">
+                <input type="text" id="emailPassword" placeholder="Пароль от почты" class="input">
+                
+                <input type="email" id="backupEmail" placeholder="Резервная почта" class="input">
+                <input type="text" id="birthDate" placeholder="Дата рождения" class="input">
+                
+                <input type="text" id="psnCodes" placeholder="Коды PSN" class="input">
+                <input type="text" id="psnAuthenticator" placeholder="PSN Аутентификатор" class="input">
+                
+                <div class="positions-section" style="grid-column: 1 / -1;">
+                    <h3>Количество позиций:</h3>
+                    <div class="positions-grid">
+                        <label>П2 PS4: <input type="number" id="p2_ps4" class="input-small" value="0" min="0"></label>
+                        <label>П3 PS4: <input type="number" id="p3_ps4" class="input-small" value="0" min="0"></label>
+                        <label>П2 PS5: <input type="number" id="p2_ps5" class="input-small" value="0" min="0"></label>
+                        <label>П3 PS5: <input type="number" id="p3_ps5" class="input-small" value="0" min="0"></label>
+                    </div>
+                </div>
+                
+                <button onclick="addAccount()" class="btn btn-success" style="grid-column: 1 / -1;">Добавить аккаунт</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="users.js"></script>
+    <script src="auth.js"></script>
+    <script src="workers.js"></script>
+    <script src="firebase.js"></script>
+</body>
+</html>

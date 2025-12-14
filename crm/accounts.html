@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список аккаунтов - Менеджер игровых аккаунтов</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1><span>📋</span><span>Список аккаунтов</span></h1>
+        
+        <div class="nav-buttons">
+            <!-- Навигация добавится через JS -->
+        </div>
+
+        <div class="section">
+            <div class="filters">
+                <select id="filterGame" class="input">
+                    <option value="">Все игры</option>
+                </select>
+                <input type="text" id="searchAccount" placeholder="Поиск по логину или почте..." class="input">
+                <button onclick="filterAccounts()" class="btn btn-primary">Применить</button>
+                <button onclick="clearFilters()" class="btn btn-secondary">Сбросить</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>👥 Все аккаунты</h2>
+            <div id="accountsList" class="accounts-grid"></div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>✏️ Редактировать аккаунт</h2>
+            <div id="editForm" class="form-grid"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="users.js"></script>
+    <script src="auth.js"></script>
+    <script src="workers.js"></script>
+    <script src="firebase.js"></script>
+</body>
+</html>

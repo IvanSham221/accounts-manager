@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление играми - Менеджер игровых аккаунтов</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1><span>🎯</span><span>Управление играми</span></h1>
+        
+        <div class="nav-buttons"></div>
+
+        <div class="section">
+            <h2>➕ Добавить игру</h2>
+            <div class="form-container">
+                <input type="text" id="gameName" placeholder="Название игры" class="input">
+                <button onclick="addGame()" class="btn btn-primary">Добавить игру</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📚 Список игр</h2>
+            <div id="gamesList" class="list"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - Менеджер игровых аккаунтов</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-form">
+            <h1>🎮 Менеджер аккаунтов</h1>
+            <h2>Вход в систему</h2>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="loginUsername">Логин:</label>
+                    <input type="text" id="loginUsername" required class="input">
+                </div>
+                
+                <div class="input-group">
+                    <label for="loginPassword">Пароль:</label>
+                    <input type="password" id="loginPassword" required class="input">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">Войти</button>
+            </form>
+            
+            <div id="loginError" style="color: red; margin-top: 15px; display: none;"></div>
+            
+            <div class="login-footer">
+                <p>Демо доступ: admin / @Az27831501112</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // Если уже авторизован - перенаправляем
+        if (auth.currentUser) {
+            window.location.href = 'manager.html';
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (auth.login(username, password)) {
+                window.location.href = 'manager.html';
+            } else {
+                document.getElementById('loginError').textContent = 'Неверный логин или пароль';
+                document.getElementById('loginError').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
